@@ -27,7 +27,7 @@ fun PuntosScreen(viewModel: CloroViewModel = viewModel()) {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp) 
     ) {
         items(puntos) { p ->
             val color = when (p.estado) {
