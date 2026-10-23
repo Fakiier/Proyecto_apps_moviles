@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,8 +28,8 @@ import com.example.appcloro_grupojrcc.ui.theme.AppCloro_GrupoJRCCTheme
 fun PuntosScreen(viewModel: CloroViewModel = viewModel(), onPuntoClick: (Int) -> Unit = {}) {    val puntos by viewModel.puntos.collectAsStateWithLifecycle()
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp) 
+        Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(puntos) { p ->
             val color = when (p.estado) {
@@ -52,6 +52,8 @@ fun PuntosScreen(viewModel: CloroViewModel = viewModel(), onPuntoClick: (Int) ->
 @Composable
 fun PuntosScreenPreview() {
     AppCloro_GrupoJRCCTheme {
-        PuntosScreen()
+        Surface(color = MaterialTheme.colorScheme.background) {
+            PuntosScreen()
+        }
     }
 }
