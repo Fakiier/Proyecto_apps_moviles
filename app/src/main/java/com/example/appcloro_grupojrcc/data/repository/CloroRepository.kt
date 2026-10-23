@@ -21,9 +21,11 @@ class CloroRepository{
     )
 
     private val usuarios = listOf(
-        Usuario("operario@cloro.cl", "1234", Rol.OPERARIO),
-        Usuario("supervisor@cloro.cl", "1234", Rol.SUPERVISOR),
-        Usuario("jefatura@cloro.cl", "1234", Rol.JEFATURA)
+        Usuario("operario1@cloro.cl", "1234", "Carlos Rojas", Rol.OPERARIO, listOf("Granja Norte")),
+        Usuario("operario2@cloro.cl", "1234", "Ana Pérez", Rol.OPERARIO, listOf("Granja Sur", "Granja Centro")),
+        Usuario("supervisor1@cloro.cl", "1234", "Luis Soto", Rol.SUPERVISOR, listOf("Granja Norte", "Granja Sur")),
+        Usuario("supervisor2@cloro.cl", "1234", "María Díaz", Rol.SUPERVISOR, listOf("Granja Centro")),
+        Usuario("jefatura@cloro.cl", "1234", "Pedro Vega", Rol.JEFATURA, listOf("Granja Norte", "Granja Sur", "Granja Centro"))
     )
 
     fun validarUsuario(correo: String, clave: String) =

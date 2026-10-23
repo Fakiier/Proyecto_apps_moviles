@@ -26,7 +26,14 @@ fun AppNavigation(){
             })
         }
         composable (Rutas.PUNTOS) {
-            PuntosScreen(vm, onPuntoClick = {nav.navigate(Rutas.detalle(it)) })
+            PuntosScreen(
+                vm,
+                onPuntoClick = { nav.navigate(Rutas.detalle(it)) },
+                onCerrarSesion = {
+                    vm.cerrarSesion()
+                    nav.navigate(Rutas.LOGIN) { popUpTo(Rutas.PUNTOS) { inclusive = true } }
+                }
+            )
             }
         composable (
             Rutas.DETALLE,
