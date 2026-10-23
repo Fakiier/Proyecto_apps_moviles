@@ -4,6 +4,6 @@ data class Usuario(
     val correo: String,
     val clave: String,
     val nombre: String,
-    val Rol: Rol,
+    val rol: Rol,
     val granjas: List<String>
     )

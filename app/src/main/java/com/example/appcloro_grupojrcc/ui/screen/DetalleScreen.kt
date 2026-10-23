@@ -20,7 +20,13 @@ import com.example.appcloro_grupojrcc.data.model.Rol
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 
 @Composable
-fun DetalleScreen(viewModel: CloroViewModel, id: Int, onVolver: () -> Unit) {
+fun DetalleScreen(
+    viewModel: CloroViewModel,
+    id: Int,
+    onVolver: () -> Unit,
+    onHistorial: () -> Unit,
+    onRegistro: () -> Unit
+) {
     val rol by viewModel.rol.collectAsStateWithLifecycle()
     val punto = viewModel.puntoPorId(id)
 
@@ -33,8 +39,9 @@ fun DetalleScreen(viewModel: CloroViewModel, id: Int, onVolver: () -> Unit) {
             Text("Código: ${punto.codigo} - Tipo: ${punto.tipo}")
             Text("Estado: ${punto.estado.name}")
             Text("Actualizado: ${punto.actualizado}")
+            Button(onClick = onHistorial) { Text("Ver historial") }
             if (rol == Rol.OPERARIO || rol == Rol.SUPERVISOR) {
-                Button(onClick = {/*Fase 3 formulario*/}) { Text("Registrar acción") }
+                Button(onClick = onRegistro) { Text("Registrar medición") }
             }
         }
         OutlinedButton(

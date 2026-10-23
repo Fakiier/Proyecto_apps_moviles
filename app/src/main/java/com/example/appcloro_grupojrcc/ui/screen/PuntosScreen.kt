@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appcloro_grupojrcc.data.model.EstadoCloro
+import com.example.appcloro_grupojrcc.data.model.Rol
 import com.example.appcloro_grupojrcc.ui.theme.AppCloro_GrupoJRCCTheme
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 
@@ -24,7 +25,9 @@ import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 fun PuntosScreen(
     viewModel: CloroViewModel = viewModel(),
     onPuntoClick: (Int) -> Unit = {},
-    onCerrarSesion: () -> Unit = {}
+    onCerrarSesion: () -> Unit = {},
+    onAlertas: () -> Unit = {},
+    onPanel: () -> Unit = {}
 ) {
     val puntos by viewModel.puntos.collectAsStateWithLifecycle()
     val usuario by viewModel.usuario.collectAsStateWithLifecycle()
@@ -44,13 +47,21 @@ fun PuntosScreen(
             ) {
                 Column {
                     Text(usuario?.nombre ?: "", style = MaterialTheme.typography.titleMedium)
-                    Text(usuario?.Rol?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "")
+                    Text(usuario?.rol?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "")
                 }
                 OutlinedButton(
                     onClick = onCerrarSesion,
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White)
                 ) { Text("Salir") }
+            }
+        }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onAlertas) { Text("Alertas") }
+                if (usuario?.rol == Rol.JEFATURA) {
+                    Button(onClick = onPanel) { Text("Panel") }
+                }
             }
         }
         porGranja.forEach { (granja, lista) ->
