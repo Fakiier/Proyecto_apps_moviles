@@ -10,9 +10,5 @@ data class PuntoMedicion(
     val actualizado: String   // fecha y hora de la última medición
 ) {
     val estado: EstadoCloro
-        get() = when {
-            nivelCloro < 0.2 || nivelCloro > 6.0 -> EstadoCloro.CRITICO
-            nivelCloro < 3.0 || nivelCloro > 5.0 -> EstadoCloro.ADVERTENCIA
-            else -> EstadoCloro.NORMAL
-        }
+        get() = calcularEstado(nivelCloro)
 }

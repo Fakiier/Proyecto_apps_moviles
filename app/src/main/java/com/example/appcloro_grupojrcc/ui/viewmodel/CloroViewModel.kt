@@ -20,7 +20,7 @@ class CloroViewModel : ViewModel(){
     fun iniciarSesion(correo: String, clave: String): Boolean {
         val u = repo.validarUsuario(correo, clave) ?: return false
         _usuario.value = u
-        _rol.value = u.Rol
+        _rol.value = u.rol
         return true
     }
 
