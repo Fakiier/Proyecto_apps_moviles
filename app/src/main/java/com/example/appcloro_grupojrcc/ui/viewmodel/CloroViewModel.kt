@@ -14,7 +14,13 @@ class CloroViewModel : ViewModel(){
     private val _rol = MutableStateFlow<Rol?>(null)
     val rol = _rol.asStateFlow()
 
-    fun elegirRol(r: Rol) { _rol.value = r }
+    fun iniciarSesion(correo: String, clave: String): Boolean {
+        val usuario = repo.validarUsuario(correo, clave) ?: return false
+        _rol.value = usuario.Rol
+        return true
+    }
+
+    fun cerrarSesion() { _rol.value = null }
 
     fun puntoPorId(id: Int ) = _puntos.value.find{ it.id == id }
 }

@@ -1,9 +1,12 @@
 package com.example.appcloro_grupojrcc.ui.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -22,11 +25,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.appcloro_grupojrcc.ui.theme.AppCloro_GrupoJRCCTheme
 
 @Composable
-fun PuntosScreen(viewModel: CloroViewModel = viewModel()) {
-    val puntos by viewModel.puntos.collectAsStateWithLifecycle()
+fun PuntosScreen(viewModel: CloroViewModel = viewModel(), onPuntoClick: (Int) -> Unit = {}) {    val puntos by viewModel.puntos.collectAsStateWithLifecycle()
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp) 
     ) {
         items(puntos) { p ->
@@ -35,10 +37,10 @@ fun PuntosScreen(viewModel: CloroViewModel = viewModel()) {
                 EstadoCloro.ADVERTENCIA -> Color(0xFFFFC107)
                 EstadoCloro.CRITICO -> Color(0xFFF44336)
             }
-            Card(modifier = Modifier.fillParentMaxWidth()) {
+            Card(modifier = Modifier.fillMaxWidth().clickable { onPuntoClick(p.id) }) {
                 Column(Modifier.padding(16.dp)) {
                     Text("${p.granja} - ${p.nombre}", style = MaterialTheme.typography.titleMedium)
-                    Text("Cloro libre: ${p.nivelCloro} mg/L", color = color)
+                    Text("Cloro libre: ${"%.2f".format(p.nivelCloro)} ppm", color = color)
                     Text("Actualizado: ${p.actualizado}")
                 }
             }
