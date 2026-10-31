@@ -16,11 +16,18 @@ import com.example.appcloro_grupojrcc.ui.screen.PanelJefaturaScreen
 import com.example.appcloro_grupojrcc.ui.screen.PuntosScreen
 import com.example.appcloro_grupojrcc.ui.screen.RegistroMedicionScreen
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModel
+import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModelFactory
 
 @Composable
 fun AppNavigation(){
     val nav = rememberNavController()
     val vm: CloroViewModel = viewModel()
+    val medicionesVm: MedicionesViewModel = viewModel(
+        factory = MedicionesViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
     val argId = listOf(navArgument("id") {type = NavType.IntType})
 
     NavHost(navController = nav, startDestination = Rutas.LOGIN) {
