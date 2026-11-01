@@ -60,7 +60,12 @@ fun AppNavigation(){
             )
         }
         composable(Rutas.HISTORIAL, arguments = argId) { entry ->
-            HistorialScreen(entry.arguments?.getInt("id") ?: 0, onVolver = {nav.popBackStack() })
+            HistorialScreen(
+                entry.arguments?.getInt("id") ?: 0,
+                vm,
+                medicionesVm,
+                onVolver = { nav.popBackStack() }
+            )
         }
 
         composable(Rutas.REGISTRO_MEDICION, arguments = argId) { entry ->
