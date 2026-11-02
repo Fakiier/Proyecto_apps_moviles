@@ -33,7 +33,15 @@ import com.example.appcloro_grupojrcc.ui.theme.color
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.RegistroMedicionViewModel
-
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.appcloro_grupojrcc.notificaciones.NotificadorCloro
 @Composable
 fun RegistroMedicionScreen(
     puntoId: Int,
@@ -45,6 +53,15 @@ fun RegistroMedicionScreen(
     val ui by formVm.ui.collectAsStateWithLifecycle()
     val usuario by cloroVm.usuario.collectAsStateWithLifecycle()
     val punto = cloroVm.puntoPorId(puntoId)
+    val context = LocalContext.current
+    var permisoNotificaciones by remember { mutableStateOf(NotificadorCloro.tienePermiso(context)) }
+    val pedirPermiso = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { permisoNotificaciones = it }
+
+    LaunchedEffect(Unit) {
+        if (!permisoNotificaciones) pedirPermiso.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
 
     Column(
         modifier = Modifier
@@ -77,11 +94,23 @@ fun RegistroMedicionScreen(
         )
 
         EstadoPrevio(ui.estadoPrevio)
+        if (!permisoNotificaciones) {
+            Text(
+                "Las notificaciones están desactivadas: no recibirás avisos de mediciones críticas.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFFFC107)
+            )
+        }
 
         Button(
             onClick = {
                 val medicion = formVm.validarYCrear(puntoId, usuario?.nombre ?: "Desconocido")
-                if (medicion != null) medicionesVm.registrar(medicion)
+                if (medicion != null) {
+                    medicionesVm.registrar(medicion)
+                    if (medicion.estado == EstadoCloro.CRITICO) {
+                        NotificadorCloro.notificarCritica(context, punto, medicion)
+                    }
+                }
             }
         ) { Text("Guardar medición") }
 

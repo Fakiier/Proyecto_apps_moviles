@@ -17,10 +17,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.appcloro_grupojrcc.ui.navigation.AppNavigation
 import com.example.appcloro_grupojrcc.ui.screen.PuntosScreen
 import com.example.appcloro_grupojrcc.ui.theme.AppCloro_GrupoJRCCTheme
+import com.example.appcloro_grupojrcc.notificaciones.NotificadorCloro
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NotificadorCloro.crearCanal(this)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
