@@ -69,7 +69,12 @@ fun AppNavigation(){
         }
 
         composable(Rutas.REGISTRO_MEDICION, arguments = argId) { entry ->
-            RegistroMedicionScreen(entry.arguments?.getInt("id") ?: 0, onVolver = {nav.popBackStack()})
+            RegistroMedicionScreen(
+                entry.arguments?.getInt("id") ?: 0,
+                vm,
+                medicionesVm,
+                onVolver = { nav.popBackStack() }
+            )
         }
 
         composable (Rutas.ALERTAS){
