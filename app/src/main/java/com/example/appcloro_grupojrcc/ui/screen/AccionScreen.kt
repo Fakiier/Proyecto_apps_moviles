@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,15 +24,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.appcloro_grupojrcc.data.model.AccionCorrectiva
 import com.example.appcloro_grupojrcc.data.model.TipoDesviacion
 import com.example.appcloro_grupojrcc.ui.theme.color
+import com.example.appcloro_grupojrcc.ui.viewmodel.AccionViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.AlertasViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 import com.example.appcloro_grupojrcc.util.copiarDesdeUri
 import com.example.appcloro_grupojrcc.util.guardarBitmap
-import com.example.appcloro_grupojrcc.validacion.ValidadorMedicion
 import java.io.File
 
 @Composable
@@ -41,37 +40,28 @@ fun AccionScreen(
     alertaId: Int,
     cloroVm: CloroViewModel,
     alertasVm: AlertasViewModel,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    accionVm: AccionViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val lista by alertasVm.lista.collectAsStateWithLifecycle()
     val acciones by alertasVm.acciones.collectAsStateWithLifecycle()
     val usuario by cloroVm.usuario.collectAsStateWithLifecycle()
+    val ui by accionVm.ui.collectAsStateWithLifecycle()
 
     val alerta = lista.find { it.alerta.id == alertaId }?.alerta
     val punto = alerta?.let { cloroVm.puntoPorId(it.puntoId) }
     val deLaAlerta = acciones.filter { it.alertaId == alertaId }
 
-    var descripcion by rememberSaveable { mutableStateOf("") }
-    var foto by rememberSaveable { mutableStateOf<String?>(null) }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    var guardada by rememberSaveable { mutableStateOf(false) }
-
     val tomarFoto = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
-        if (bitmap != null) {
-            foto = guardarBitmap(context, bitmap)
-            guardada = false
-        }
+        if (bitmap != null) accionVm.onFotoChange(guardarBitmap(context, bitmap))
     }
     val elegirFoto = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
-        if (uri != null) {
-            foto = copiarDesdeUri(context, uri)
-            guardada = false
-        }
+        if (uri != null) accionVm.onFotoChange(copiarDesdeUri(context, uri))
     }
 
     Column(
@@ -96,20 +86,16 @@ fun AccionScreen(
             Text("Responsable: ${usuario?.nombre ?: "-"}")
 
             OutlinedTextField(
-                value = descripcion,
-                onValueChange = {
-                    descripcion = it
-                    error = null
-                    guardada = false
-                },
+                value = ui.descripcion,
+                onValueChange = accionVm::onDescripcionChange,
                 label = { Text("Descripción de la acción") },
                 leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
                 trailingIcon = {
-                    if (error != null) Icon(Icons.Default.Warning, contentDescription = "Error")
+                    if (ui.error != null) Icon(Icons.Default.Warning, contentDescription = "Error")
                 },
-                isError = error != null,
+                isError = ui.error != null,
                 supportingText = {
-                    AnimatedVisibility(visible = error != null) { Text(error ?: "") }
+                    AnimatedVisibility(visible = ui.error != null) { Text(ui.error ?: "") }
                 },
                 minLines = 3,
                 colors = coloresCampo(),
@@ -133,14 +119,14 @@ fun AccionScreen(
                     Text("Galería")
                 }
             }
-            foto?.let { ruta ->
+            ui.foto?.let { ruta ->
                 AsyncImage(
                     model = File(ruta),
                     contentDescription = "Foto de la acción",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth().height(180.dp)
                 )
-                TextButton(onClick = { foto = null }) {
+                TextButton(onClick = { accionVm.onFotoChange(null) }) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
                     Spacer(Modifier.width(4.dp))
                     Text("Quitar foto", color = Color.White)
@@ -149,30 +135,8 @@ fun AccionScreen(
 
             Button(
                 onClick = {
-                    val texto = descripcion.trim()
-                    error = when {
-                        texto.isEmpty() -> "Describe la acción realizada"
-                        texto.length < 10 -> "Escribe al menos 10 caracteres"
-                        texto.length > 300 -> "Máximo 300 caracteres"
-                        else -> null
-                    }
-                    if (error == null) {
-                        alertasVm.registrarAccion(
-                            AccionCorrectiva(
-                                id = 0,
-                                alertaId = alerta.id,
-                                puntoId = alerta.puntoId,
-                                medicionId = alerta.medicionId,
-                                descripcion = texto,
-                                responsable = usuario?.nombre ?: "Desconocido",
-                                fecha = ValidadorMedicion.fechaActual(),
-                                fotoUri = foto
-                            )
-                        )
-                        descripcion = ""
-                        foto = null
-                        guardada = true
-                    }
+                    accionVm.validarYCrear(alerta, usuario?.nombre ?: "Desconocido")
+                        ?.let { alertasVm.registrarAccion(it) }
                 }
             ) {
                 Icon(Icons.Default.Check, contentDescription = null)
@@ -180,7 +144,7 @@ fun AccionScreen(
                 Text("Guardar acción")
             }
 
-            AnimatedVisibility(visible = guardada) {
+            AnimatedVisibility(visible = ui.guardada) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
