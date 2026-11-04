@@ -26,6 +26,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import com.example.appcloro_grupojrcc.ui.viewmodel.PanelJefaturaViewModel
+import com.example.appcloro_grupojrcc.ui.viewmodel.PanelJefaturaViewModelFactory
 
 @Composable
 fun AppNavigation(){
@@ -36,6 +38,9 @@ fun AppNavigation(){
     )
     val alertasVm: AlertasViewModel = viewModel(
         factory = AlertasViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
+    val panelVm: PanelJefaturaViewModel = viewModel(
+        factory = PanelJefaturaViewModelFactory(LocalContext.current.applicationContext as Application)
     )
     val argId = listOf(navArgument("id") {type = NavType.IntType})
 
@@ -126,7 +131,7 @@ fun AppNavigation(){
             )
         }
         composable(Rutas.PANEL) {
-            PanelJefaturaScreen(onVolver = {nav.popBackStack()})
+            PanelJefaturaScreen(panelVm, onVolver = { nav.popBackStack() })
         }
     }
 }
