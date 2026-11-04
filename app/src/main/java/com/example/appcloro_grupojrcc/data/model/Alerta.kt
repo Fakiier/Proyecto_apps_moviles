@@ -9,5 +9,7 @@ data class Alerta(
     val gravedad: EstadoCloro, //advertencia o critico
     val tipo: TipoDesviacion,
     val fecha: String,
-    val abierta: Boolean = true
+    val abierta: Boolean = true,
+    val fechaMillis: Long = 0L,
+    val cerradaPor: String? = null
 )

@@ -20,6 +20,8 @@ import android.app.Application
 import androidx.compose.ui.platform.LocalContext
 import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModelFactory
+import com.example.appcloro_grupojrcc.ui.viewmodel.AlertasViewModel
+import com.example.appcloro_grupojrcc.ui.viewmodel.AlertasViewModelFactory
 
 @Composable
 fun AppNavigation(){
@@ -27,6 +29,9 @@ fun AppNavigation(){
     val vm: CloroViewModel = viewModel()
     val medicionesVm: MedicionesViewModel = viewModel(
         factory = MedicionesViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
+    val alertasVm: AlertasViewModel = viewModel(
+        factory = AlertasViewModelFactory(LocalContext.current.applicationContext as Application)
     )
     val argId = listOf(navArgument("id") {type = NavType.IntType})
 
@@ -46,7 +51,7 @@ fun AppNavigation(){
                     vm.cerrarSesion()
                     nav.navigate(Rutas.LOGIN) { popUpTo(Rutas.PUNTOS) { inclusive = true } }
                 },
-                onAlertas = { nav.navigate(Rutas.PUNTOS) },
+                onAlertas = { nav.navigate(Rutas.ALERTAS) },
                 onPanel = {nav.navigate(Rutas.PANEL)}
             )
             }
@@ -79,8 +84,10 @@ fun AppNavigation(){
 
         composable (Rutas.ALERTAS){
             AlertasScreen(
-                onAccion = {nav.navigate(Rutas.accion(it))},
-                onVolver = {nav.popBackStack()}
+                alertasVm = alertasVm,
+                cloroVm = vm,
+                onAccion = { nav.navigate(Rutas.accion(it)) },
+                onVolver = { nav.popBackStack() }
             )
         }
 
@@ -88,7 +95,12 @@ fun AppNavigation(){
             Rutas.ACCION,
             arguments = listOf(navArgument("alertaId") {type = NavType.IntType})
         ) { entry ->
-            AccionScreen(entry.arguments?.getInt("alertaId") ?: 0, onVolver = {nav.popBackStack()})
+            AccionScreen(
+                alertaId = entry.arguments?.getInt("alertaId") ?: 0,
+                cloroVm = vm,
+                alertasVm = alertasVm,
+                onVolver = { nav.popBackStack() }
+            )
         }
         composable(Rutas.PANEL) {
             PanelJefaturaScreen(onVolver = {nav.popBackStack()})

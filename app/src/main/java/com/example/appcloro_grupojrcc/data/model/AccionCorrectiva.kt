@@ -10,5 +10,6 @@ data class AccionCorrectiva(
     val descripcion: String,
     val responsable: String,
     val fecha: String,
-    val estado: EstadoResolucion = EstadoResolucion.PENDIENTE
+    val estado: EstadoResolucion = EstadoResolucion.PENDIENTE,
+    val fotoUri: String? = null
 )
