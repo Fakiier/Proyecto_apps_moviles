@@ -22,6 +22,10 @@ import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.MedicionesViewModelFactory
 import com.example.appcloro_grupojrcc.ui.viewmodel.AlertasViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.AlertasViewModelFactory
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 
 @Composable
 fun AppNavigation(){
@@ -35,7 +39,26 @@ fun AppNavigation(){
     )
     val argId = listOf(navArgument("id") {type = NavType.IntType})
 
-    NavHost(navController = nav, startDestination = Rutas.LOGIN) {
+    NavHost(
+        navController = nav,
+        startDestination = Rutas.LOGIN,
+        enterTransition = {
+            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(300)) +
+                    fadeIn(tween(300))
+        },
+        exitTransition = {
+            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(300)) +
+                    fadeOut(tween(300))
+        },
+        popEnterTransition = {
+            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(300)) +
+                    fadeIn(tween(300))
+        },
+        popExitTransition = {
+            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(300)) +
+                    fadeOut(tween(300))
+        }
+    ) {
         composable (Rutas.LOGIN){
             LoginScreen (onIngresar = { correo, clave ->
                 val ok = vm.iniciarSesion(correo, clave)
