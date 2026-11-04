@@ -8,7 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -97,6 +103,10 @@ fun AccionScreen(
                     guardada = false
                 },
                 label = { Text("Descripción de la acción") },
+                leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                trailingIcon = {
+                    if (error != null) Icon(Icons.Default.Warning, contentDescription = "Error")
+                },
                 isError = error != null,
                 supportingText = {
                     AnimatedVisibility(visible = error != null) { Text(error ?: "") }
@@ -108,12 +118,20 @@ fun AccionScreen(
 
             Text("Foto (opcional)")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { tomarFoto.launch(null) }) { Text("Tomar foto") }
+                Button(onClick = { tomarFoto.launch(null) }) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Tomar foto")
+                }
                 OutlinedButton(
                     onClick = { elegirFoto.launch("image/*") },
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White)
-                ) { Text("Galería") }
+                ) {
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Galería")
+                }
             }
             foto?.let { ruta ->
                 AsyncImage(
@@ -122,7 +140,11 @@ fun AccionScreen(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth().height(180.dp)
                 )
-                TextButton(onClick = { foto = null }) { Text("Quitar foto", color = Color.White) }
+                TextButton(onClick = { foto = null }) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
+                    Spacer(Modifier.width(4.dp))
+                    Text("Quitar foto", color = Color.White)
+                }
             }
 
             Button(
@@ -152,7 +174,11 @@ fun AccionScreen(
                         guardada = true
                     }
                 }
-            ) { Text("Guardar acción") }
+            ) {
+                Icon(Icons.Default.Check, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Guardar acción")
+            }
 
             AnimatedVisibility(visible = guardada) {
                 Row(
