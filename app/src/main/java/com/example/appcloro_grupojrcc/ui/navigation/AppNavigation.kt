@@ -95,7 +95,12 @@ fun AppNavigation(){
             Rutas.ACCION,
             arguments = listOf(navArgument("alertaId") {type = NavType.IntType})
         ) { entry ->
-            AccionScreen(entry.arguments?.getInt("alertaId") ?: 0, onVolver = {nav.popBackStack()})
+            AccionScreen(
+                alertaId = entry.arguments?.getInt("alertaId") ?: 0,
+                cloroVm = vm,
+                alertasVm = alertasVm,
+                onVolver = { nav.popBackStack() }
+            )
         }
         composable(Rutas.PANEL) {
             PanelJefaturaScreen(onVolver = {nav.popBackStack()})

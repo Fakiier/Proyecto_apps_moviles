@@ -54,6 +54,9 @@ class AlertasViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val acciones: StateFlow<List<AccionCorrectiva>> = alertasRepo.acciones()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     fun registrarAccion(accion: AccionCorrectiva) {
         viewModelScope.launch { alertasRepo.registrarAccion(accion) }
     }
