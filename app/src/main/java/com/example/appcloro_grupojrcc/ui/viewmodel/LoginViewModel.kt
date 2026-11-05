@@ -1,7 +1,7 @@
 package com.example.appcloro_grupojrcc.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.appcloro_grupojrcc.validacion.ValidarLogin
+import com.example.appcloro_grupojrcc.validacion.ValidadorLogin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,7 +24,7 @@ class LoginViewModel : ViewModel() {
         _ui.update {
             it.copy(
                 correo = texto,
-                errorCorreo = if (texto.isBlank()) null else ValidarLogin.validarCorreo(texto),
+                errorCorreo = if (texto.isBlank()) null else ValidadorLogin.validarCorreo(texto),
                 errorGeneral = null
             )
         }
@@ -34,7 +34,7 @@ class LoginViewModel : ViewModel() {
         _ui.update {
             it.copy(
                 clave = texto,
-                errorClave = if (texto.isEmpty()) null else ValidarLogin.validarClave(texto),
+                errorClave = if (texto.isEmpty()) null else ValidadorLogin.validarClave(texto),
                 errorGeneral = null
             )
         }
@@ -47,8 +47,8 @@ class LoginViewModel : ViewModel() {
     // Valida los campos y, si están bien, consulta las credenciales. Devuelve true si entra.
     fun ingresar(autenticar: (String, String) -> Boolean): Boolean {
         val actual = _ui.value
-        val errorCorreo = ValidarLogin.validarCorreo(actual.correo)
-        val errorClave = ValidarLogin.validarClave(actual.clave)
+        val errorCorreo = ValidadorLogin.validarCorreo(actual.correo)
+        val errorClave = ValidadorLogin.validarClave(actual.clave)
         if (errorCorreo != null || errorClave != null) {
             _ui.update { it.copy(errorCorreo = errorCorreo, errorClave = errorClave) }
             return false

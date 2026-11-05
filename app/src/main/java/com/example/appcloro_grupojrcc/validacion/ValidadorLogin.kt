@@ -1,6 +1,6 @@
 package com.example.appcloro_grupojrcc.validacion
 
-object ValidarLogin {
+object ValidadorLogin {
     private val formatoCorreo = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     const val LARGO_MINIMO_CLAVE = 4
 
