@@ -6,7 +6,7 @@ Aplicación móvil Android para consultar, registrar y dar seguimiento a los niv
 - Javier Romero
 - Catalina Campos
 
-Planificación en Trello: <<enlace al tablero>>
+Planificación en Trello: https://trello.com/b/UGQyKR2W/appcloro-dsy1105-ep2
 
 ## Contexto
 Los operarios, supervisores y jefaturas no tienen una herramienta móvil para ver desde terreno las mediciones, históricos y alertas de cloro. La app permite identificar rápido valores fuera de rango y registrar las acciones correctivas. Usa únicamente datos ficticios.
