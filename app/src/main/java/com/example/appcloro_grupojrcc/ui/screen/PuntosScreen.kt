@@ -16,9 +16,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.appcloro_grupojrcc.data.model.EstadoCloro
+import com.example.appcloro_grupojrcc.data.model.Medicion
 import com.example.appcloro_grupojrcc.data.model.Rol
+import com.example.appcloro_grupojrcc.data.model.calcularEstado
 import com.example.appcloro_grupojrcc.ui.theme.AppCloro_GrupoJRCCTheme
+import com.example.appcloro_grupojrcc.ui.theme.color
 import com.example.appcloro_grupojrcc.ui.viewmodel.CloroViewModel
 
 @Composable
@@ -27,7 +29,11 @@ fun PuntosScreen(
     onPuntoClick: (Int) -> Unit = {},
     onCerrarSesion: () -> Unit = {},
     onAlertas: () -> Unit = {},
-    onPanel: () -> Unit = {}
+    onPanel: () -> Unit = {},
+    ultimas: List<Medicion> = emptyList(),
+    pendientes: Int = 0,
+    sincronizando: Boolean = false,
+    onSincronizar: () -> Unit = {}
 ) {
     val puntos by viewModel.puntos.collectAsStateWithLifecycle()
     val usuario by viewModel.usuario.collectAsStateWithLifecycle()
@@ -62,7 +68,13 @@ fun PuntosScreen(
                 if (usuario?.rol == Rol.JEFATURA) {
                     Button(onClick = onPanel) { Text("Panel") }
                 }
+                Button(onClick = onSincronizar, enabled = !sincronizando) {
+                    Text(if (sincronizando) "Enviando…" else "Sincronizar")
+                }
             }
+        }
+        if (pendientes > 0) {
+            item { Text("Mediciones pendientes de sincronizar: $pendientes") }
         }
         porGranja.forEach { (granja, lista) ->
             item {
@@ -73,16 +85,15 @@ fun PuntosScreen(
                 )
             }
             items(lista) { p ->
-                val color = when (p.estado) {
-                    EstadoCloro.NORMAL -> Color(0xFF4CAF50)
-                    EstadoCloro.ADVERTENCIA -> Color(0xFFFFC107)
-                    EstadoCloro.CRITICO -> Color(0xFFF44336)
-                }
+                val ultima = ultimas.find { it.puntoId == p.id }
+                val nivel = ultima?.nivelCloro ?: p.nivelCloro
+                val actualizado = ultima?.fecha ?: p.actualizado
+                val color = calcularEstado(nivel).color()
                 Card(modifier = Modifier.fillMaxWidth().clickable { onPuntoClick(p.id) }) {
                     Column(Modifier.padding(16.dp)) {
                         Text("${p.nombre} - ${p.tipo}", style = MaterialTheme.typography.titleMedium)
-                        Text("Cloro libre: ${"%.2f".format(p.nivelCloro)} ppm", color = color)
-                        Text("Actualizado: ${p.actualizado}")
+                        Text("Cloro libre: ${"%.2f".format(nivel)} ppm", color = color)
+                        Text("Actualizado: $actualizado")
                     }
                 }
             }

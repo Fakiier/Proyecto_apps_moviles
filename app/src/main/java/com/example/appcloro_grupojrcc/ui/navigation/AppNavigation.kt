@@ -28,6 +28,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import com.example.appcloro_grupojrcc.ui.viewmodel.PanelJefaturaViewModel
 import com.example.appcloro_grupojrcc.ui.viewmodel.PanelJefaturaViewModelFactory
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun AppNavigation(){
@@ -43,6 +47,18 @@ fun AppNavigation(){
         factory = PanelJefaturaViewModelFactory(LocalContext.current.applicationContext as Application)
     )
     val argId = listOf(navArgument("id") {type = NavType.IntType})
+
+    val ultimas by medicionesVm.ultimas.collectAsStateWithLifecycle()
+    val pendientes by medicionesVm.pendientes.collectAsStateWithLifecycle()
+    val sincronizando by medicionesVm.sincronizando.collectAsStateWithLifecycle()
+    val mensajeSync by medicionesVm.mensajeSync.collectAsStateWithLifecycle()
+    val contexto = LocalContext.current
+    LaunchedEffect(mensajeSync) {
+        mensajeSync?.let {
+            Toast.makeText(contexto, it, Toast.LENGTH_SHORT).show()
+            medicionesVm.mensajeLeido()
+        }
+    }
 
     NavHost(
         navController = nav,
@@ -80,7 +96,11 @@ fun AppNavigation(){
                     nav.navigate(Rutas.LOGIN) { popUpTo(Rutas.PUNTOS) { inclusive = true } }
                 },
                 onAlertas = { nav.navigate(Rutas.ALERTAS) },
-                onPanel = {nav.navigate(Rutas.PANEL)}
+                onPanel = { nav.navigate(Rutas.PANEL) },
+                ultimas = ultimas,
+                pendientes = pendientes,
+                sincronizando = sincronizando,
+                onSincronizar = { medicionesVm.sincronizar() }
             )
             }
         composable (Rutas.DETALLE, arguments = argId) { entry ->
@@ -89,7 +109,8 @@ fun AppNavigation(){
                 vm, id,
                 onVolver = {nav.popBackStack() },
                 onHistorial = {nav.navigate(Rutas.historial(id)) },
-                onRegistro = {nav.navigate(Rutas.registroMedicion(id)) }
+                onRegistro = { nav.navigate(Rutas.registroMedicion(id)) },
+                ultimas = ultimas
             )
         }
         composable(Rutas.HISTORIAL, arguments = argId) { entry ->
