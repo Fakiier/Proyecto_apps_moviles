@@ -1,6 +1,8 @@
 package com.example.appcloro_grupojrcc.data.local
+
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
@@ -22,11 +24,15 @@ interface MedicionDao {
     @Query("SELECT COUNT(*) FROM mediciones")
     suspend fun contar(): Int
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(medicion: MedicionEntity): Long
 
     @Insert
     suspend fun insertarTodas(mediciones: List<MedicionEntity>)
+
+    // Para lo que llega del servidor: ignora lo que ya existe
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertarIgnorando(mediciones: List<MedicionEntity>)
 
     @Query("UPDATE mediciones SET sincronizada = 1 WHERE id IN (:ids)")
     suspend fun marcarSincronizadas(ids: List<Int>)

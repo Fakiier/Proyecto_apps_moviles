@@ -7,7 +7,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Entity(tableName = "mediciones", indices = [Index("puntoId", "fechaMillis")])
+@Entity(
+    tableName = "mediciones",
+    indices = [Index("puntoId", "fechaMillis", "registradoPor", unique = true)]
+)
 data class MedicionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val puntoId: Int,
